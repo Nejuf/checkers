@@ -22,15 +22,21 @@ class Board
     perform_moves!(color, move_sequence)
   end
 
+  def game_over?
+    false
+    #TODO game over when a player is out of pieces or out of moves
+  end
+
 protected
     def perform_moves!(color, move_sequence)
 
-      move_sequence.each do |move|
-        start_pos = move.first
-        end_pos = move.last
+      move_sequence.each_index do |index|
+        break if index > (move_sequence.length-2)
+        start_pos = move_sequence[index]
+        end_pos = move_sequence[index+1]
         delta = (end_pos-start_pos).abs
         if  delta == 3 || delta == 4 || delta == 5
-          raise InvalidMoveError, "Piece can only have multiple moves of jumps." if move_sequence.length > 1
+          raise InvalidMoveError, "Piece can only have multiple moves of jumps." if move_sequence.length > 2
             perform_slide(color, start_pos, end_pos)
         elsif delta == 9 || delta == 7
           perform_jump(color, start_pos, end_pos)

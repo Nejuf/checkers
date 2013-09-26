@@ -17,19 +17,20 @@ class Checkers
     while @player1.nil?
       puts "White player is human? (Y/N)"
       if gets.chomp.upcase == "Y"
-        @player1 = HumanPlayer.new
+        @player1 = HumanPlayer.new :white
       elsif gets.chom.upcase == "N"
-        @player1 = ComputerPlayer.new
+        @player1 = ComputerPlayer.new :white
       end
     end
     while @player2.nil?
       puts "Black player is human? (Y/N)"
       if gets.chomp.upcase == "Y"
-        @player2 = HumanPlayer.new
+        @player2 = HumanPlayer.new :black
       elsif gets.chom.upcase == "N"
-        @player2 = ComputerPlayer.new
+        @player2 = ComputerPlayer.new :black
       end
     end
+    @active_player = @player1
 
     until @board.game_over?
       moves = @active_player.get_formatted_move_sequence
