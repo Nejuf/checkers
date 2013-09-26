@@ -13,7 +13,8 @@ class Piece
       moves = [pos-4, pos-3, pos+4, pos+5]
 
       if pos < 5#top of board
-        moves.delete(pos-4, pos-3)
+        moves.delete(pos-4)
+        moves.delete(pos-3)
       end
 
       #Odd rows should not appear at left end of board, so just remove right ones
@@ -22,9 +23,10 @@ class Piece
         moves.delete(pos+5)
       end
     else#even row
-      moves = [pos-4, pos-3, pos+4, pos+5]
+      moves = [pos-5, pos-4, pos+3, pos+4]
       if pos > 28 #bottom of board
-        moves.delete(pos+4, pos+5)
+        moves.delete(pos+4)
+        moves.delete(pos+5)
       end
 
       #Even rows should not appear at right end of board, so just remove left ones
@@ -48,10 +50,12 @@ class Piece
     moves = [pos-9, pos-7, pos+7, pos+9]
 
     if pos < 9#top two rows of board
-      moves.delete(pos-4, pos-3)
+      moves.delete(pos-4)
+      moves.delete(pos-3)
     end
     if pos > 24 #bottom two rows of board
-      moves.delete(pos+4, pos+5)
+      moves.delete(pos+4)
+      moves.delete(pos+5)
     end
 
     #Odd rows should not appear at left end of board, so just remove right ones
