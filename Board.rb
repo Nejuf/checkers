@@ -41,7 +41,7 @@ class Board
         piece = piece_at(coord_to_pos(row,col))
         col_string = ""
         if piece.nil?
-          col_string = "."
+          col_string = " "
         elsif piece.color == :white
           col_string = "W"
           col_string = "WK" if piece.promoted
@@ -104,8 +104,10 @@ class Board
       raise InvalidMoveError.new "Piece cannot move to the designated position. #{end_pos}" if !piece.jump_moves(start_pos).include?(end_pos)
       raise InvalidMoveError.new "Piece Cannot move to an occupied square. #{end_pos}" if !piece_at(end_pos).nil?
       delta = (start_pos - end_pos).abs
+      offset = 0
       offset = (delta/2.0).ceil if delta == 9
       offset = (delta/2.0).floor if delta == 7
+      raise "something is wrong with the delta" if offset == 0
       jumped_pos = offset + [start_pos, end_pos].min
       raise InvalidMoveError.new "There is no piece to jump. #{jumped_pos}" if piece_at(jumped_pos).nil?
       raise InvalidMoveError.new "Ally pieces cannot be jumped. #{jumped_pos}" if piece_at(jumped_pos).color == color
