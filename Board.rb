@@ -38,7 +38,7 @@ protected
       piece = piece_at(start_pos)
       raise InvalidMoveError, "There is no piece at start position." if piece.nil?
       raise InvalidMoveError, "Cannot move pieces of opponent's color." if piece.color != color
-      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.slide_moves(self, start_pos).include?(end_pos)
+      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.slide_moves(start_pos).include?(end_pos)
       raise InvalidMoveError, "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
 
       @piece_positions[end_pos] = piece
@@ -49,7 +49,7 @@ protected
       piece = piece_at(start_pos)
       raise InvalidMoveError, "There is no piece at start position." if piece.nil?
       raise InvalidMoveError, "Cannot move pieces of opponent's color." if piece.color != color
-      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.slide_moves(self, start_pos).include?(end_pos)
+      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.slide_moves(start_pos).include?(end_pos)
       raise InvalidMoveError, "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
 
       jumped_pos = (start_pos - end_pos).abs/2.0).ceil + [start_pos, end_pos].min
@@ -70,13 +70,6 @@ protected
       else
         return true
       end
-    end
-
-    def move_piece(piece, end_pos)
-
-    end
-
-    def remove_piece(piece)
     end
 
     def piece_at(pos)
