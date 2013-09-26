@@ -1,3 +1,6 @@
+require_relative "Board"
+require_relative "Player"
+require_relative 'errors'
 class Checkers
 
   def initialize
@@ -29,7 +32,14 @@ class Checkers
 
 
     until @board.game_over?
-      @board.
+      moves = @active_player.get_formatted_move_sequence
+      begin
+        @board.perform_moves(@active_player.color, moves)
+      rescue
+        raise InvalidMoveError
+      else
+        @active_player = (@active_player == @player1) ? @player2 : @player1
+      end
     end
 
     puts "Game Over."
