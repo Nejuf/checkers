@@ -1,6 +1,7 @@
 class Piece
   attr_reader :color
   attr_accessor :promoted
+
   def initialize(color)
     @promoted = false
     @color = color #red/white can move up, black can move down (unpromoted)
@@ -73,9 +74,17 @@ class Piece
     end
   end
 
+  def check_promote(pos)
+    if !@promoted
+      @promoted = true if color == :white && pos > 0 && pos < 5
+      @promoted = true if color == :black && pos < 32 && pos > 28
+    end
+  end
+
   def row_num(pos)
     (pos/4.0).ceil
   end
+
   def col_end(pos)
     return -1 if [5,13,21,29].include?(pos)
     return -2 if [1,9,17,25].include?(pos)

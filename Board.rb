@@ -44,8 +44,10 @@ class Board
           col_string = "."
         elsif piece.color == :white
           col_string = "W"
+          col_string = "WK" if piece.promoted
         else#black
           col_string = "B"
+          col_string = "BK" if piece.promoted
         end
         row_string << col_string.center(3).on_red if col.even?
         row_string << col_string.center(3).on_white if col.odd?
@@ -83,6 +85,8 @@ class Board
       raise InvalidMoveError.new "Cannot move pieces of opponent's color." if piece.color != color
       raise InvalidMoveError.new "Piece cannot move to the designated position." if !piece.slide_moves(start_pos).include?(end_pos)
       raise InvalidMoveError.new "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
+
+      piece.check_promote(end_pos)
       @piece_positions[end_pos] = piece
       @piece_positions.delete(start_pos)
     end
@@ -98,6 +102,7 @@ class Board
       raise InvalidMoveError.new "There is no piece to jump." if piece_at(jumped_pos).nil?
       raise InvalidMoveError.new "Ally pieces cannot be jumped." if piece_at(jumped_pos).color == color
 
+      piece.check_promote(end_pos)
       @piece_positions[end_pos] = piece
       @piece_positions.delete(start_pos)
       @piece_positions.delete(jumped_pos)
