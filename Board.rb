@@ -1,6 +1,11 @@
 require_relative 'errors'
-class Board
+require_relative "Piece"
 
+class Board
+  protected
+  attr_accessor :piece_positions
+  public
+  attr_reader :piece_positions
   def setup
     @piece_positions = Hash.new
     (1..12).each do |num|
@@ -9,11 +14,12 @@ class Board
     (21..32).each do |num|
       @piece_positions[num] = Piece.new(:white)
     end
+    self
   end
 
   def perform_moves(color, move_sequence)
     raise InvalidMoveError if !valid_move_seq?(color, move_sequence)
-    perform_moves!(move_sequence)
+    perform_moves!(color, move_sequence)
   end
 
 protected
@@ -49,7 +55,7 @@ protected
       piece = piece_at(start_pos)
       raise InvalidMoveError, "There is no piece at start position." if piece.nil?
       raise InvalidMoveError, "Cannot move pieces of opponent's color." if piece.color != color
-      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.slide_moves(start_pos).include?(end_pos)
+      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.jump_moves(start_pos).include?(end_pos)
       raise InvalidMoveError, "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
 
       jumped_pos = ((start_pos - end_pos).abs / 2.0).ceil + [start_pos, end_pos].min
@@ -61,11 +67,21 @@ protected
       @piece_positions.delete(jumped_pos)
     end
 
+    def dup
+      copy = Board.new
+      copy.piece_positions = {}
+      @piece_positions.each do |pos, piece|
+        copy.piece_positions[pos] = piece.dup
+      end
+      copy
+    end
+
     def valid_move_seq?(color, move_sequence)
       begin
-        board_copy = self.dup#need deep dup?
+        board_copy = self.dup
         board_copy.perform_moves!(color, move_sequence)
-      rescue
+      rescue StandardError => e
+        puts e.message
         return false
       else
         return true

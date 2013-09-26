@@ -1,4 +1,6 @@
 class Piece
+  attr_reader :color
+  attr_accessor :promoted
   def initialize(color)
     @promoted = false
     @color = color #red/white can move up, black can move down (unpromoted)
@@ -34,9 +36,9 @@ class Piece
     #remove back dir slides if not promoted
     if !promoted
       if color == :white#white moves up
-        moves.delete_if {|num| num > piece_pos}
+        moves.delete_if {|num| num > pos}
       else#black moves down
-        moves.delete_if {|num| num < piece_pos}
+        moves.delete_if {|num| num < pos}
       end
     end
   end
@@ -64,9 +66,9 @@ class Piece
     #remove back dir slides if not promoted
     if !promoted
       if color == :white#white moves up
-        moves.delete_if {|num| num > piece_pos}
+        moves.delete_if {|num| num > pos}
       else#black moves down
-        moves.delete_if {|num| num < piece_pos}
+        moves.delete_if {|num| num < pos}
       end
     end
   end
