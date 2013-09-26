@@ -103,12 +103,17 @@ class Board
       raise InvalidMoveError.new "Cannot move pieces of opponent's color. #{start_pos}" if piece.color != color
       raise InvalidMoveError.new "Piece cannot move to the designated position. #{end_pos}" if !piece.jump_moves(start_pos).include?(end_pos)
       raise InvalidMoveError.new "Piece Cannot move to an occupied square. #{end_pos}" if !piece_at(end_pos).nil?
+
+      smallest_pos = [start_pos, end_pos].min
       delta = (start_pos - end_pos).abs
       offset = 0
-      offset = (delta/2.0).ceil if delta == 9
-      offset = (delta/2.0).floor if delta == 7
-      raise "something is wrong with the delta" if offset == 0
-      jumped_pos = offset + [start_pos, end_pos].min
+      offset = 5 if delta == 9 && Piece.row_num(smallest_pos).odd?
+      offset = 4 if delta == 9 && Piece.row_num(smallest_pos).even?
+      offset = 4 if delta == 7 && Piece.row_num(smallest_pos).odd?
+      offset = 3 if delta == 7 && Piece.row_num(smallest_pos).even?
+      raise "something is wrong with the delta or position" if offset == 0
+
+      jumped_pos = offset + smallest_pos
       raise InvalidMoveError.new "There is no piece to jump. #{jumped_pos}" if piece_at(jumped_pos).nil?
       raise InvalidMoveError.new "Ally pieces cannot be jumped. #{jumped_pos}" if piece_at(jumped_pos).color == color
 
