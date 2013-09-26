@@ -44,6 +44,8 @@ class Piece
         moves.delete_if {|num| num < pos}
       end
     end
+
+    moves
   end
 
   def jump_moves(pos)
@@ -76,6 +78,8 @@ class Piece
         moves.delete_if {|num| num < pos}
       end
     end
+
+    moves
   end
 
   def check_promote(pos)
