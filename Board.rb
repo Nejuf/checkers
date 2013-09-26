@@ -69,6 +69,7 @@ class Board
 
 
     def perform_moves!(color, move_sequence)
+      positions_jumped = []
       (0...(move_sequence.length-1)).each do |index|
         break if index > (move_sequence.length-2)
         start_pos = move_sequence[index]
@@ -78,7 +79,7 @@ class Board
           raise InvalidMoveError.new "Piece can only have multiple moves of jumps." if move_sequence.length > 2
           perform_slide(color, start_pos, end_pos)
         elsif delta == 9 || delta == 7
-          perform_jump(color, start_pos, end_pos)
+          positions_jumped << perform_jump(color, start_pos, end_pos, positions_jumped)
         else
           raise InvalidMoveError.new "Cannot move more than one diagonal sliding, or two diagonals jumping."
         end
@@ -97,13 +98,14 @@ class Board
       @piece_positions.delete(start_pos)
     end
 
-    def perform_jump(color, start_pos, end_pos)
+    def perform_jump(color, start_pos, end_pos, positions_jumped)
       piece = piece_at(start_pos)
       raise InvalidMoveError.new "There is no piece at start position. #{start_pos}" if piece.nil?
       raise InvalidMoveError.new "Cannot move pieces of opponent's color. #{start_pos}" if piece.color != color
       raise InvalidMoveError.new "Piece cannot move to the designated position. #{end_pos}" if !piece.jump_moves(start_pos).include?(end_pos)
-      raise InvalidMoveError.new "Piece Cannot move to an occupied square. #{end_pos}" if !piece_at(end_pos).nil?
+      raise InvalidMoveError.new "Piece cannot move to an occupied square. #{end_pos}" if !piece_at(end_pos).nil?
 
+      raise InvalidMoveError.new "Piece cannot jump to the position of a jumped piece in the same turn." if positions_jumped.include?(end_pos)
       smallest_pos = [start_pos, end_pos].min
       delta = (start_pos - end_pos).abs
       offset = 0
@@ -114,6 +116,7 @@ class Board
       raise "something is wrong with the delta or position" if offset == 0
 
       jumped_pos = offset + smallest_pos
+      raise InvalidMoveError.new "Piece cannot jump over a piece jumped in the same turn." if positions_jumped.include?(jum)
       raise InvalidMoveError.new "There is no piece to jump. #{jumped_pos}" if piece_at(jumped_pos).nil?
       raise InvalidMoveError.new "Ally pieces cannot be jumped. #{jumped_pos}" if piece_at(jumped_pos).color == color
 
@@ -121,6 +124,8 @@ class Board
       @piece_positions[end_pos] = piece
       @piece_positions.delete(start_pos)
       @piece_positions.delete(jumped_pos)
+
+      jumped_pos
     end
 
     def dup
