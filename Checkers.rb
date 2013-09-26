@@ -33,6 +33,7 @@ class Checkers
     @active_player = @player1
 
     until @board.game_over?
+      @board.render
       moves = @active_player.get_formatted_move_sequence
       begin
         @board.perform_moves(@active_player.color, moves)

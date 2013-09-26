@@ -14,6 +14,7 @@ end
 class HumanPlayer < Player
   def get_formatted_move_sequence
     sequence = []
+    puts "It's your turn, #{@color.to_s.capitalize}"
     begin
       print "\nEnter move sequence: "
       input = gets.chomp.split(%r{\D+})

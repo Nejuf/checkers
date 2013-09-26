@@ -27,6 +27,26 @@ class Board
     #TODO game over when a player is out of pieces or out of moves
   end
 
+  def render
+    8.times do |row|
+      row_string = ""
+      8.times do |col|
+        piece = piece_at(coord_to_pos(row,col))
+        col_string = ""
+        if piece.nil?
+          col_string = "_"
+        elsif piece.color == :white
+          col_string = "O"
+        else#black
+          col_string = "X"
+        end
+        row_string << col_string.center(3)
+      end
+      puts row_string
+    end
+    puts
+  end
+
 protected
     def perform_moves!(color, move_sequence)
 
@@ -94,10 +114,20 @@ protected
       end
     end
 
+    #assumes top left as 0,0 and row as first element and black at top
+    def coord_to_pos(row,col)
+      return nil if row.even? && col.even? || row.odd? && col.odd? #these are always empty squares in checkers!
+      return row*4+(col/2).floor+1
+    end
+
     def piece_at(pos)
+      if pos.nil?
+        return nil
+      end
       if pos < 1 || pos > 32
         raise ArgumentError, "Board positions range 1-32. #{pos} was given."
       end
+
       @piece_positions[pos]
     end
 
