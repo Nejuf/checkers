@@ -13,7 +13,6 @@ end
 
 class HumanPlayer < Player
   def get_formatted_move_sequence
-    sequence = []
     puts "It's your turn, #{@color.to_s.capitalize}"
     begin
       print "\nEnter move sequence: "
@@ -25,7 +24,7 @@ class HumanPlayer < Player
       puts e.message
       retry
     end
-    sequence
+    input
   end
 end
 

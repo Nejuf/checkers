@@ -37,8 +37,8 @@ class Checkers
       moves = @active_player.get_formatted_move_sequence
       begin
         @board.perform_moves(@active_player.color, moves)
-      rescue
-        raise InvalidMoveError
+      rescue InvalidMoveError => e
+        puts "Invalid move: #{e.message}"
       else
         @active_player = (@active_player == @player1) ? @player2 : @player1
       end

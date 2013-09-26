@@ -1,11 +1,15 @@
 require_relative 'errors'
 require_relative "Piece"
+require 'colorize'
 
 class Board
   protected
   attr_accessor :piece_positions
   public
   attr_reader :piece_positions
+  def initialize
+    setup
+  end
   def setup
     @piece_positions = Hash.new
     (1..12).each do |num|
@@ -18,7 +22,9 @@ class Board
   end
 
   def perform_moves(color, move_sequence)
-    raise InvalidMoveError if !valid_move_seq?(color, move_sequence)
+    puts "perform_moves #{color} #{move_sequence}"
+    raise InvalidMoveError.new "Invalid move." if !valid_move_seq?(color, move_sequence)
+    puts "valid move #{valid_move_seq?(color, move_sequence)}"
     perform_moves!(color, move_sequence)
   end
 
@@ -28,65 +34,69 @@ class Board
   end
 
   def render
+    puts
     8.times do |row|
       row_string = ""
       8.times do |col|
         piece = piece_at(coord_to_pos(row,col))
         col_string = ""
         if piece.nil?
-          col_string = "_"
+          col_string = "."
         elsif piece.color == :white
-          col_string = "O"
+          col_string = "W"
         else#black
-          col_string = "X"
+          col_string = "B"
         end
-        row_string << col_string.center(3)
+        row_string << col_string.center(3).on_red if col.even?
+        row_string << col_string.center(3).on_white if col.odd?
       end
       puts row_string
+      puts
     end
     puts
   end
 
-protected
-    def perform_moves!(color, move_sequence)
 
-      move_sequence.each_index do |index|
+    def perform_moves!(color, move_sequence)
+      p move_sequence
+      (0...(move_sequence.length-1)).each do |index|
+        p index
+        p index+1
         break if index > (move_sequence.length-2)
         start_pos = move_sequence[index]
         end_pos = move_sequence[index+1]
         delta = (end_pos-start_pos).abs
         if  delta == 3 || delta == 4 || delta == 5
-          raise InvalidMoveError, "Piece can only have multiple moves of jumps." if move_sequence.length > 2
-            perform_slide(color, start_pos, end_pos)
+          raise InvalidMoveError.new "Piece can only have multiple moves of jumps." if move_sequence.length > 2
+          perform_slide(color, start_pos, end_pos)
         elsif delta == 9 || delta == 7
           perform_jump(color, start_pos, end_pos)
         else
-          raise InvalidMoveError, "Cannot move more than one diagonal sliding, or two diagonals jumping."
+          raise InvalidMoveError.new "Cannot move more than one diagonal sliding, or two diagonals jumping."
         end
       end
     end
 
     def perform_slide(color, start_pos, end_pos)
       piece = piece_at(start_pos)
-      raise InvalidMoveError, "There is no piece at start position." if piece.nil?
-      raise InvalidMoveError, "Cannot move pieces of opponent's color." if piece.color != color
-      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.slide_moves(start_pos).include?(end_pos)
-      raise InvalidMoveError, "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
-
+      raise InvalidMoveError.new "There is no piece at start position." if piece.nil?
+      raise InvalidMoveError.new "Cannot move pieces of opponent's color." if piece.color != color
+      raise InvalidMoveError.new "Piece cannot move to the designated position." if !piece.slide_moves(start_pos).include?(end_pos)
+      raise InvalidMoveError.new "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
       @piece_positions[end_pos] = piece
       @piece_positions.delete(start_pos)
     end
 
     def perform_jump(color, start_pos, end_pos)
       piece = piece_at(start_pos)
-      raise InvalidMoveError, "There is no piece at start position." if piece.nil?
-      raise InvalidMoveError, "Cannot move pieces of opponent's color." if piece.color != color
-      raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.jump_moves(start_pos).include?(end_pos)
-      raise InvalidMoveError, "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
+      raise InvalidMoveError.new "There is no piece at start position." if piece.nil?
+      raise InvalidMoveError.new "Cannot move pieces of opponent's color." if piece.color != color
+      raise InvalidMoveError.new "Piece cannot move to the designated position." if !piece.jump_moves(start_pos).include?(end_pos)
+      raise InvalidMoveError.new "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
 
       jumped_pos = ((start_pos - end_pos).abs / 2.0).ceil + [start_pos, end_pos].min
-      raise InvalidMoveError, "There is no piece to jump." if piece_at(jumped_pos).nil?
-      raise InvalidMoveError, "Ally pieces cannot be jumped." if piece_at(jumped_pos).color == color
+      raise InvalidMoveError.new "There is no piece to jump." if piece_at(jumped_pos).nil?
+      raise InvalidMoveError.new "Ally pieces cannot be jumped." if piece_at(jumped_pos).color == color
 
       @piece_positions[end_pos] = piece
       @piece_positions.delete(start_pos)
@@ -107,7 +117,7 @@ protected
         board_copy = self.dup
         board_copy.perform_moves!(color, move_sequence)
       rescue StandardError => e
-        puts e.message
+        raise InvalidMoveError.new e.message
         return false
       else
         return true
@@ -125,7 +135,7 @@ protected
         return nil
       end
       if pos < 1 || pos > 32
-        raise ArgumentError, "Board positions range 1-32. #{pos} was given."
+        raise ArgumentError.new "Board positions range 1-32. #{pos} was given."
       end
 
       @piece_positions[pos]
