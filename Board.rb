@@ -52,7 +52,7 @@ protected
       raise InvalidMoveError, "Piece cannot move to the designated position." if !piece.slide_moves(start_pos).include?(end_pos)
       raise InvalidMoveError, "Piece Cannot move to an occupied square." if !piece_at(end_pos).nil?
 
-      jumped_pos = (start_pos - end_pos).abs/2.0).ceil + [start_pos, end_pos].min
+      jumped_pos = ((start_pos - end_pos).abs / 2.0).ceil + [start_pos, end_pos].min
       raise InvalidMoveError, "There is no piece to jump." if piece_at(jumped_pos).nil?
       raise InvalidMoveError, "Ally pieces cannot be jumped." if piece_at(jumped_pos).color == color
 

@@ -41,7 +41,7 @@ class Piece
     end
   end
 
-  def jump_moves(piece_pos)
+  def jump_moves(pos)
     moves = [pos-9, pos-7, pos+7, pos+9]
 
     if pos < 9#top two rows of board

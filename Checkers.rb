@@ -1,6 +1,7 @@
 require_relative "Board"
 require_relative "Player"
 require_relative 'errors'
+
 class Checkers
 
   def initialize
@@ -17,7 +18,7 @@ class Checkers
       puts "White player is human? (Y/N)"
       if gets.chomp.upcase == "Y"
         @player1 = HumanPlayer.new
-      else if gets.chom.upcase == "N"
+      elsif gets.chom.upcase == "N"
         @player1 = ComputerPlayer.new
       end
     end
@@ -25,11 +26,10 @@ class Checkers
       puts "Black player is human? (Y/N)"
       if gets.chomp.upcase == "Y"
         @player2 = HumanPlayer.new
-      else if gets.chom.upcase == "N"
+      elsif gets.chom.upcase == "N"
         @player2 = ComputerPlayer.new
       end
     end
-
 
     until @board.game_over?
       moves = @active_player.get_formatted_move_sequence
