@@ -53,7 +53,7 @@ class Board
         row_string << col_string.center(3).on_white if col.even? == row.even?
 
         if @show_help_board
-          help_char = "."
+          help_char = " "
           help_pos = coord_to_pos(row,col)
           help_char =  help_pos.to_s unless help_pos.nil?
           help_string << help_char.center(3).on_red if col.even? != row.even?
@@ -93,16 +93,15 @@ class Board
           valid_jump = nil
           potential_jumps.each do |jump_dest_pos|
             begin
-              perform_jump(color, last_pos, jump_dest_pos)
-            rescue
-
+              #p "perform_jump #{color} #{last_pos} #{jump_dest_pos} #{positions_jumped}"
+              perform_jump(color, last_pos, jump_dest_pos, positions_jumped)
+            rescue => e
             else
               valid_jump = jump_dest_pos
             end
           end
           if !valid_jump.nil?
-            raise InvalidMoveError.new "If there is a valid jump following another jump, it must be made.
-              \nValid jump to #{valid_jump} was found at end of given jump sequence."
+            raise InvalidMoveError.new "If there is a valid jump following another jump, it must be made.\n--Valid jump to #{valid_jump} was found at end of given jump sequence."
           end
         end
       end
@@ -138,7 +137,7 @@ class Board
       raise "something is wrong with the delta or position" if offset == 0
 
       jumped_pos = offset + smallest_pos
-      raise InvalidMoveError.new "Piece cannot jump over a piece jumped in the same turn." if positions_jumped.include?(jum)
+      raise InvalidMoveError.new "Piece cannot jump over a piece jumped in the same turn." if positions_jumped.include?(jumped_pos)
       raise InvalidMoveError.new "There is no piece to jump. #{jumped_pos}" if piece_at(jumped_pos).nil?
       raise InvalidMoveError.new "Ally pieces cannot be jumped. #{jumped_pos}" if piece_at(jumped_pos).color == color
 

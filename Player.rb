@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Player
 
   attr_accessor :color
@@ -13,7 +15,9 @@ end
 
 class HumanPlayer < Player
   def get_formatted_move_sequence
-    puts "It's your turn, #{@color.to_s.capitalize}"
+    puts "It's your turn, #{@color.to_s.capitalize}".on_red if @color == :black
+    puts "It's your turn, #{@color.to_s.capitalize}".on_white if @color == :white
+
     begin
       print "\nEnter move sequence: "
       input = gets.chomp.split(%r{\D+})
