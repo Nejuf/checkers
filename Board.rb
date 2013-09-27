@@ -27,9 +27,35 @@ class Board
     perform_moves!(color, move_sequence)
   end
 
-  def game_over?
+  def game_over?(active_player)
+    return false if has_pieces?(active_player.color) && has_valid_moves(active_player.color)
+    true
+  end
+
+  def has_pieces?(color)
+    @piece_positions.each_value do |piece|
+      if piece.color == color
+        return true
+      end
+    end
     false
-    #TODO game over when a player is out of pieces or out of moves
+  end
+
+  def has_valid_moves?(color)
+    @piece_positions.each do |pos, piece|
+      if piece.color == color
+        piece.slide_moves(pos).each do |move_dest|
+          if valid_move_seq?(color, [pos,move_dest])
+          return true
+        end
+
+        piece.jump_moves(pos).each do |move_dest|
+          if valid_move_seq?(color, [pos,move_dest])
+          return true
+        end
+      end
+    end
+    false
   end
 
   def render

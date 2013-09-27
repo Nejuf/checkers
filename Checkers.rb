@@ -18,7 +18,7 @@ class Checkers
       puts "White player is human? (Y/N)"
       if gets.chomp.upcase == "Y"
         @player1 = HumanPlayer.new :white
-      elsif gets.chom.upcase == "N"
+      elsif gets.chomp.upcase == "N"
         @player1 = ComputerPlayer.new :white
       end
     end
@@ -26,13 +26,13 @@ class Checkers
       puts "Black player is human? (Y/N)"
       if gets.chomp.upcase == "Y"
         @player2 = HumanPlayer.new :black
-      elsif gets.chom.upcase == "N"
+      elsif gets.chomp.upcase == "N"
         @player2 = ComputerPlayer.new :black
       end
     end
     @active_player = @player1
 
-    until @board.game_over?
+    until @board.game_over?(@active_player)
       @board.render
       moves = @active_player.get_formatted_move_sequence
       begin
@@ -43,7 +43,8 @@ class Checkers
         @active_player = (@active_player == @player1) ? @player2 : @player1
       end
     end
-
-    puts "Game Over."
+    #The winning player is the one who made the move that triggered game over
+    winning_player = (@active_player == @player1) ? @player2 : @player1
+    puts "Game Over. #{winning_player.color.capitalize} wins!"
   end
 end
