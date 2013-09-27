@@ -84,6 +84,28 @@ class Board
           raise InvalidMoveError.new "Cannot move more than one diagonal sliding, or two diagonals jumping."
         end
       end
+
+      #Enforce must make available jump rule
+      if !positions_jumped.empty?#no need to enforce when no pieces have been jumped
+        last_pos = move_sequence.last
+        potential_jumps = piece_at(last_pos).jump_moves(last_pos)
+        if !potential_jumps.empty?
+          valid_jump = nil
+          potential_jumps.each do |jump_dest_pos|
+            begin
+              perform_jump(color, last_pos, jump_dest_pos)
+            rescue
+
+            else
+              valid_jump = jump_dest_pos
+            end
+          end
+          if !valid_jump.nil?
+            raise InvalidMoveError.new "If there is a valid jump following another jump, it must be made.
+              \nValid jump to #{valid_jump} was found at end of given jump sequence."
+          end
+        end
+      end
     end
 
     def perform_slide(color, start_pos, end_pos)
